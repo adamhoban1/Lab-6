@@ -17,6 +17,37 @@ namespace Student_MVC_App.data
                     "StudentCourse",
                     j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId"),
                     j => j.HasOne<student>().WithMany().HasForeignKey("StudentId"));
+
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Students)
+                .WithMany(s => s.Courses)
+                .UsingEntity<Dictionary<string, object>>(
+                    "StudentCourse",
+                    j => j.HasOne<student>().WithMany().HasForeignKey("StudentId"),
+                    j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId"));
+            modelBuilder.Entity<student>()
+                .Property(s => s.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+            modelBuilder.Entity<student>()
+                .Property(s => s.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+            modelBuilder.Entity<student>()
+                .Property(s => s.Age)
+                .IsRequired();
+            modelBuilder.Entity<Course>()
+                .Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            modelBuilder.Entity<Course>()
+                .Property(c => c.department)
+                .IsRequired()
+                .HasMaxLength(100);
+            modelBuilder.Entity<Course>()
+                .Property(c => c.lecturer)
+                .IsRequired()
+                .HasMaxLength(100);//f
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite($"Data Source=C:\\Users\\AdamHoban-STUDENT\\source\\repos\\Lab 6\\Student Console App2\\student2.db");

@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Student_Class_Library;
+using Microsoft.EntityFrameworkCore.Design;
 namespace Student_MVC_App
 {
     public class Program
@@ -32,5 +35,14 @@ namespace Student_MVC_App
 
             app.Run();
         }
+
+    }
+    public class StudentsContextmvc : DbContext
+    {
+        public DbSet<student> Students { get; set; }
+        public DbSet<Course> Courses { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite($"Data Source=C:\\Users\\AdamHoban-STUDENT\\source\\repos\\Lab 6\\Student MVC App\\student.db");
+
     }
 }

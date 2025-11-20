@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Student_Class_Library;
-using Microsoft.EntityFrameworkCore.Design;
+using Student_MVC_App.data;
+
 namespace Student_MVC_App
 {
     public class Program
@@ -12,13 +13,17 @@ namespace Student_MVC_App
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Register StudentsContext so DI provides DbContextOptions<StudentsContext>
+            // Uses connection string "DefaultConnection" from appsettings.json
+            builder.Services.AddDbContext<StudentsContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -35,14 +40,5 @@ namespace Student_MVC_App
 
             app.Run();
         }
-
-    }
-    public class StudentsContextmvc : DbContext
-    {
-        public DbSet<student> Students { get; set; }
-        public DbSet<Course> Courses { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite($"Data Source=C:\\Users\\AdamHoban-STUDENT\\source\\repos\\Lab 6\\Student MVC App\\student.db");
-
     }
 }

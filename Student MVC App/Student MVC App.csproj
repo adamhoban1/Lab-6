@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Student_MVC_App</RootNamespace>
+    <UserSecretsId>f7429a17-7df3-4f42-a3be-a118e8087041</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

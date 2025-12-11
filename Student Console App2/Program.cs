@@ -66,45 +66,8 @@ namespace Student_Console_App2
 
             db.AddRange(student1, student2, student3, course1, course2, course3);
             db.SaveChanges();
-            static void Main(string[] args)
-            {
-                using var db = new StudentsContext();
-                db.Database.EnsureCreated(); // Ensure the database and tables are created
-
-                var course1 = new Course
-                {
-                    Name = "Database Systems",
-                    department = "Computer Science",
-                    lecturer = "Dr. Smith"
-                };
-                // ... rest of your code ...
-                db.Database.EnsureCreated(); // <-- Add this line
-                Console.WriteLine("Data has been saved.");
-                //using (var context = new StudentsContext())
-                //{
-                //    context.Database.EnsureCreated();
-                //    context.Students.AddRange(student1, student2, student3);
-                //    context.Courses.AddRange(course1, course2, course3);
-                //    context.SaveChanges();
-                //}
-                //Console.WriteLine("your data has been saved");
-                //var students = new List<student>();
-                //using (var context = new StudentsContext())
-                //{
-                //    students = context.Students
-                //        .Include(s => s.Courses)
-                //        .ToList();
-                //}
-                //foreach (var student in students)
-                //{
-                //    Console.WriteLine($"Student: {student.Name}, Age: {student.Age}, Email: {student.Email}");
-                //    foreach (var course in student.Courses)
-                //    {
-                //        Console.WriteLine($"\tEnrolled in: {course.Name} ({course.department}) - Lecturer: {course.lecturer}");
-                //    }
-                //}
-
-            }
+            Console.WriteLine("save data");
+            
 
         }
         public class StudentsContext : DbContext

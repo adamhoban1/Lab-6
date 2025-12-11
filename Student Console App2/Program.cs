@@ -7,6 +7,7 @@ namespace Student_Console_App2
     {
         static void Main(string[] args)
         {
+            using var db = new StudentsContext();
             var course1 = new Course
             {
                 Name = "Database Systems",
@@ -27,60 +28,108 @@ namespace Student_Console_App2
             };
 
 
-            var student1 = new student
+            var student1 = new Student
             {
                 Name = "Alice Johnson",
                 Age = 20,
                 Email = "bean"
             };
-            var student2 = new student
+            var student2 = new Student
             {
                 Name = "Bob Smith",
                 Age = 22,
                 Email = "joune"
             };
-            var student3 = new student
+            var student3 = new Student
             {
                 Name = "Charlie Brown",
                 Age = 19,
                 Email = "adasfasdf"
             };
-            student1.Courses = new List<Course> { course1, course3 };
-            student2.Courses = new List<Course> { course1, course2 };
-            student3.Courses = new List<Course> { course2, course3 };
-            using (var context = new StudentsContext())
+
+
+            student1.StudentCourses = new List<StudentCourse>
+               {
+                   new StudentCourse { Student = student1, Course = course1 },
+                   new StudentCourse { Student = student1, Course = course3 }
+               };
+            student2.StudentCourses = new List<StudentCourse>
+               {
+                   new StudentCourse { Student = student2, Course = course1 },
+                   new StudentCourse { Student = student2, Course = course2 }
+               };
+            student3.StudentCourses = new List<StudentCourse>
+               {
+                   new StudentCourse { Student = student3, Course = course2 },
+                   new StudentCourse { Student = student3, Course = course3 }
+               };
+
+            db.AddRange(student1, student2, student3, course1, course2, course3);
+            db.SaveChanges();
+            static void Main(string[] args)
             {
-                context.Database.EnsureCreated();
-                context.Students.AddRange(student1, student2, student3);
-                context.Courses.AddRange(course1, course2, course3);
-                context.SaveChanges();
-            }
-            Console.WriteLine("your data has been saved");
-            var students = new List<student>();
-            using (var context = new StudentsContext())
-            {
-                students = context.Students
-                    .Include(s => s.Courses)
-                    .ToList();
-            }
-            foreach (var student in students)
-            {
-                Console.WriteLine($"Student: {student.Name}, Age: {student.Age}, Email: {student.Email}");
-                foreach (var course in student.Courses)
+                using var db = new StudentsContext();
+                db.Database.EnsureCreated(); // Ensure the database and tables are created
+
+                var course1 = new Course
                 {
-                    Console.WriteLine($"\tEnrolled in: {course.Name} ({course.department}) - Lecturer: {course.lecturer}");
-                }
+                    Name = "Database Systems",
+                    department = "Computer Science",
+                    lecturer = "Dr. Smith"
+                };
+                // ... rest of your code ...
+                db.Database.EnsureCreated(); // <-- Add this line
+                Console.WriteLine("Data has been saved.");
+                //using (var context = new StudentsContext())
+                //{
+                //    context.Database.EnsureCreated();
+                //    context.Students.AddRange(student1, student2, student3);
+                //    context.Courses.AddRange(course1, course2, course3);
+                //    context.SaveChanges();
+                //}
+                //Console.WriteLine("your data has been saved");
+                //var students = new List<student>();
+                //using (var context = new StudentsContext())
+                //{
+                //    students = context.Students
+                //        .Include(s => s.Courses)
+                //        .ToList();
+                //}
+                //foreach (var student in students)
+                //{
+                //    Console.WriteLine($"Student: {student.Name}, Age: {student.Age}, Email: {student.Email}");
+                //    foreach (var course in student.Courses)
+                //    {
+                //        Console.WriteLine($"\tEnrolled in: {course.Name} ({course.department}) - Lecturer: {course.lecturer}");
+                //    }
+                //}
+
             }
 
         }
-        
-    }
-    public class StudentsContext : DbContext
-    {
-        public DbSet<student> Students { get; set; }
-        public DbSet<Course> Courses { get; set; }
+        public class StudentsContext : DbContext
+        {
+            public DbSet<Student> Students { get; set; }
+            public DbSet<Course> Courses { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite($"Data Source=C:\\Users\\AdamHoban-STUDENT\\source\\repos\\Lab 6\\Student Console App2\\student.db");
+            protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+                options.UseSqlite($"Data Source=C:\\Users\\joemh\\source\\repos\\adamhoban1\\lab-6\\student Console App2\\student.db");
 
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                modelBuilder.Entity<StudentCourse>()
+                    .HasKey(sc => new { sc.StudentId, sc.CourseId });
+
+                modelBuilder.Entity<StudentCourse>()
+                    .HasOne(sc => sc.Student)
+                    .WithMany(s => s.StudentCourses)
+                    .HasForeignKey(sc => sc.StudentId);
+
+                modelBuilder.Entity<StudentCourse>()
+                    .HasOne(sc => sc.Course)
+                    .WithMany(c => c.StudentCourses)
+                    .HasForeignKey(sc => sc.CourseId);
+            }
+        }
     }
 }

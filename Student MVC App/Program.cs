@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Student_Class_Library;
 using Student_MVC_App.data;
+using Student_MVC_App.Data;
 
 namespace Student_MVC_App
 {
@@ -16,7 +17,7 @@ namespace Student_MVC_App
             // Register StudentsContext so DI provides DbContextOptions<StudentsContext>
             // Uses connection string "DefaultConnection" from appsettings.json
             builder.Services.AddDbContext<StudentsContext>(options =>
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite($"Data Source=C:\\Users\\joemh\\source\\repos\\adamhoban1\\lab-6\\student MVC App\\student.db"));
 
             var app = builder.Build();
 

@@ -1,44 +1,51 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Student_Class_Library;
-using Microsoft.EntityFrameworkCore.Design;
+using Student_Class_Library; // Your class library namespace
 
-namespace Student_MVC_App.data
+namespace Student_MVC_App.Data
 {
     public class StudentsContext : DbContext
     {
-        public StudentsContext(DbContextOptions<StudentsContext> options) : base(options) { }
+        public StudentsContext(DbContextOptions<StudentsContext> options)
+            : base(options)
+        {
+        }
 
-        public DbSet<student> Students { get; set; }
+        public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<StudentCourse> StudentCourses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure many-to-many join table once and explicitly set composite key
-            modelBuilder.Entity<student>()
-                .HasMany(s => s.Courses)
-                .WithMany(c => c.Students)
-                .UsingEntity<Dictionary<string, object>>(
-                    "StudentCourse",
-                    right => right.HasOne<Course>().WithMany().HasForeignKey("CourseId"),
-                    left => left.HasOne<student>().WithMany().HasForeignKey("StudentId"),
-                    join => join.HasKey("StudentId", "CourseId")
-                );
+            // Configure many-to-many join entity
+            modelBuilder.Entity<StudentCourse>()
+                .HasKey(sc => new { sc.StudentId, sc.CourseId });
 
-            // Property configurations for student
-            modelBuilder.Entity<student>()
+            modelBuilder.Entity<StudentCourse>()
+                .HasOne(sc => sc.Student)
+                .WithMany(s => s.StudentCourses)
+                .HasForeignKey(sc => sc.StudentId);
+
+            modelBuilder.Entity<StudentCourse>()
+                .HasOne(sc => sc.Course)
+                .WithMany(c => c.StudentCourses)
+                .HasForeignKey(sc => sc.CourseId);
+
+            // Property constraints for Student
+            modelBuilder.Entity<Student>()
                 .Property(s => s.Name)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            modelBuilder.Entity<student>()
+            modelBuilder.Entity<Student>()
                 .Property(s => s.Email)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            modelBuilder.Entity<student>()
-                .Property(s => s.Age);
+            modelBuilder.Entity<Student>()
+                .Property(s => s.Age)
+                .IsRequired();
 
-            // Property configurations for Course
+            // Property constraints for Course
             modelBuilder.Entity<Course>()
                 .Property(c => c.Name)
                 .IsRequired()
@@ -56,41 +63,32 @@ namespace Student_MVC_App.data
 
             // --- Seed data ---
 
-            // Seed Courses
+            // Courses
             modelBuilder.Entity<Course>().HasData(
                 new Course { Id = 1, Name = "Calculus I", department = "Mathematics", lecturer = "Dr. Smith" },
                 new Course { Id = 2, Name = "Introduction to Programming", department = "Computer Science", lecturer = "Prof. Chen" },
                 new Course { Id = 3, Name = "English Literature", department = "Humanities", lecturer = "Dr. Brown" }
             );
 
-            // Seed Students
-            modelBuilder.Entity<student>().HasData(
-                new student { Id = 1, Name = "Alice Johnson", Age = 20, Email = "alice@example.com" },
-                new student { Id = 2, Name = "Bob Lee", Age = 22, Email = "bob@example.com" },
-                new student { Id = 3, Name = "Carol Nguyen", Age = 19, Email = "carol@example.com" },
-                new student { Id = 4, Name = "David Kim", Age = 21, Email = "david@example.com" }
+            // Students
+            modelBuilder.Entity<Student>().HasData(
+                new Student { Id = 1, Name = "Alice Johnson", Age = 20, Email = "alice@example.com" },
+                new Student { Id = 2, Name = "Bob Lee", Age = 22, Email = "bob@example.com" },
+                new Student { Id = 3, Name = "Carol Nguyen", Age = 19, Email = "carol@example.com" },
+                new Student { Id = 4, Name = "David Kim", Age = 21, Email = "david@example.com" }
             );
 
-            // Seed many-to-many join table (shadow entity "StudentCourse")
-            // Use the non-generic Entity(string) overload so the compiler selects the correct overload.
-            modelBuilder.Entity("StudentCourse").HasData(
-                // Alice: Calculus I, Introduction to Programming
-                new { StudentId = 1, CourseId = 1 },
-                new { StudentId = 1, CourseId = 2 },
-
-                // Bob: Introduction to Programming
-                new { StudentId = 2, CourseId = 2 },
-
-                // Carol: English Literature
-                new { StudentId = 3, CourseId = 3 },
-
-                // David: Calculus I, English Literature
-                new { StudentId = 4, CourseId = 1 },
-                new { StudentId = 4, CourseId = 3 }
+            // Join table StudentCourse
+            modelBuilder.Entity<StudentCourse>().HasData(
+                new StudentCourse { StudentId = 1, CourseId = 1 },
+                new StudentCourse { StudentId = 1, CourseId = 2 },
+                new StudentCourse { StudentId = 2, CourseId = 2 },
+                new StudentCourse { StudentId = 3, CourseId = 3 },
+                new StudentCourse { StudentId = 4, CourseId = 1 },
+                new StudentCourse { StudentId = 4, CourseId = 3 }
             );
 
             base.OnModelCreating(modelBuilder);
         }
     }
 }
-

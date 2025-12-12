@@ -1,39 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Student_Class_Library; // Your class library namespace
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Student_Class_Library;
+using System.Collections.Generic;
 
 namespace Student_MVC_App.Data
 {
-    public class StudentsContext : DbContext
+    public class StudentsContext : IdentityDbContext<Appusers, IdentityRole<Guid>, Guid>
     {
-        public StudentsContext() { }
+        public StudentsContext(DbContextOptions<StudentsContext> options)
+            : base(options)
+        {
+        }
 
-        public StudentsContext(DbContextOptions<StudentsContext> options) : base(options) { }
-
-        public DbSet<Appusers> users { get; set; }
+        // Domain DbSets
         public DbSet<Course> Courses { get; set; }
-
         public DbSet<StudentCourse> StudentCourses { get; set; }
         public DbSet<project> projects { get; set; }
         public DbSet<Team> Teams { get; set; }
-        public DbSet<AppRole> roles { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            if (!options.IsConfigured)
-            {
-                options.UseSqlite($"Data Source=C:\\Users\\joemh\\source\\repos\\adamhoban1\\lab-6\\student Console App2\\student.db");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // CRITICAL: Call base to configure Identity tables
             base.OnModelCreating(modelBuilder);
-
-            // Configure Appusers to use int Id (not the inherited Guid Id from IdentityUser<Guid>)
-            modelBuilder.Entity<Appusers>()
-                .Property(u => u.Id)
-                .ValueGeneratedOnAdd();
 
             // Configure composite key for StudentCourse
             modelBuilder.Entity<StudentCourse>()
@@ -78,24 +67,32 @@ namespace Student_MVC_App.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Required fields and constraints
-            modelBuilder.Entity<Appusers>().Property(u => u.Name).IsRequired().HasMaxLength(100);
-            modelBuilder.Entity<Appusers>().Property(u => u.Email).IsRequired();
-            modelBuilder.Entity<project>().Property(p => p.Name).IsRequired().HasMaxLength(100);
-            modelBuilder.Entity<Team>().Property(t => t.Name).IsRequired().HasMaxLength(100);
-            modelBuilder.Entity<Course>().Property(c => c.Name).IsRequired();
-            modelBuilder.Entity<Course>().Property(c => c.department).IsRequired();
-            modelBuilder.Entity<Course>().Property(c => c.lecturer).IsRequired();
-        }
-    }
+            modelBuilder.Entity<Appusers>()
+                .Property(u => u.Name)
+                .IsRequired()
+                .HasMaxLength(100);
 
-    public class StudentsContextFactory : IDesignTimeDbContextFactory<StudentsContext>
-    {
-        public StudentsContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<StudentsContext>();
-            optionsBuilder.UseSqlite($"Data Source=C:\\Users\\joemh\\source\\repos\\adamhoban1\\lab-6\\student Console App2\\student.db");
+            modelBuilder.Entity<project>()
+                .Property(p => p.Name)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            return new StudentsContext(optionsBuilder.Options);
+            modelBuilder.Entity<Team>()
+                .Property(t => t.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<Course>()
+                .Property(c => c.Name)
+                .IsRequired();
+
+            modelBuilder.Entity<Course>()
+                .Property(c => c.department)
+                .IsRequired();
+
+            modelBuilder.Entity<Course>()
+                .Property(c => c.lecturer)
+                .IsRequired();
         }
     }
 }

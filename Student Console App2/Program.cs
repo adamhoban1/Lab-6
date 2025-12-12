@@ -187,7 +187,6 @@ namespace Student_Console_App2
 
             public DbSet<Appusers> users { get; set; }
             public DbSet<Course> Courses { get; set; }
-
             public DbSet<StudentCourse> StudentCourses { get; set; }
             public DbSet<project> projects { get; set; }
             public DbSet<Team> Teams { get; set; }
@@ -204,11 +203,6 @@ namespace Student_Console_App2
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
-
-                // Configure Appusers to use int Id (not the inherited Guid Id from IdentityUser<Guid>)
-                modelBuilder.Entity<Appusers>()
-                    .Property(u => u.Id)
-                    .ValueGeneratedOnAdd();
 
                 // Configure composite key for StudentCourse
                 modelBuilder.Entity<StudentCourse>()

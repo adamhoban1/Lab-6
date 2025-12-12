@@ -11,14 +11,21 @@ namespace Student_MVC_App.data
     {
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<Appusers>>();
 
             string[] roles = new[] { "Admin", "Manager", "User" };
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                {
+                    await roleManager.CreateAsync(new IdentityRole<Guid>
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = role,
+                        NormalizedName = role.ToUpper()
+                    });
+                }
             }
 
             // create admin
@@ -28,8 +35,10 @@ namespace Student_MVC_App.data
             {
                 admin = new Appusers
                 {
+                    Id = Guid.NewGuid(),
                     UserName = "admin",
                     Email = adminEmail,
+                    EmailConfirmed = true,
                     Name = "Site Admin",
                     Age = 30
                 };

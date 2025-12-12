@@ -10,7 +10,7 @@ namespace Student_MVC_App
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +19,7 @@ namespace Student_MVC_App
             builder.Services.AddDbContext<StudentsContext>(options =>
                 options.UseSqlite($"Data Source=C:\\Users\\joemh\\source\\repos\\adamhoban1\\lab-6\\student MVC App\\student.db"));
 
-            // Identity
+            // Identity - removed duplicate AddDefaultIdentity call
             builder.Services.AddIdentity<Appusers, IdentityRole<Guid>>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
@@ -27,7 +27,8 @@ namespace Student_MVC_App
                 options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<StudentsContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddDefaultUI(); // Add this to enable default Identity UI pages
 
             // optional: simple IEmailSender stub so registration pages won't throw
             builder.Services.AddTransient<IEmailSender, NullEmailSender>();
@@ -46,7 +47,7 @@ namespace Student_MVC_App
                 ctx.Database.Migrate();
 
                 // seed roles and an admin user
-                //await IdentitySeed.InitializeAsync(services);
+                await IdentitySeed.InitializeAsync(services);
             }
 
             // Configure the HTTP request pipeline.
@@ -69,9 +70,8 @@ namespace Student_MVC_App
             app.MapRazorPages();
 
             app.Run();
-
-
         }
+        
         public class NullEmailSender : IEmailSender
         {
             public Task SendEmailAsync(string email, string subject, string htmlMessage) =>

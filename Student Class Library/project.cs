@@ -11,7 +11,7 @@ namespace Student_Class_Library
         public string Description { get; set; } = string.Empty;
 
         // Navigation properties
-        public int OwnerId { get; set; }
+        public Guid OwnerId { get; set; }  // Changed from int to Guid
         public Appusers Owner { get; set; } = null!; // Required
 
         public ICollection<Team> Teams { get; set; } = new List<Team>();

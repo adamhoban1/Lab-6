@@ -10,7 +10,7 @@ namespace Student_MVC_App.Data
         {
         }
 
-        public DbSet<Student> Students { get; set; }
+        public DbSet<users> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<StudentCourse> StudentCourses { get; set; }
 
@@ -31,17 +31,17 @@ namespace Student_MVC_App.Data
                 .HasForeignKey(sc => sc.CourseId);
 
             // Property constraints for Student
-            modelBuilder.Entity<Student>()
+            modelBuilder.Entity<users>()
                 .Property(s => s.Name)
                 .IsRequired()
                 .HasMaxLength(50);
 
-            modelBuilder.Entity<Student>()
+            modelBuilder.Entity<users>()
                 .Property(s => s.Email)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            modelBuilder.Entity<Student>()
+            modelBuilder.Entity<users>()
                 .Property(s => s.Age)
                 .IsRequired();
 
@@ -71,11 +71,11 @@ namespace Student_MVC_App.Data
             );
 
             // Students
-            modelBuilder.Entity<Student>().HasData(
-                new Student { Id = 1, Name = "Alice Johnson", Age = 20, Email = "alice@example.com" },
-                new Student { Id = 2, Name = "Bob Lee", Age = 22, Email = "bob@example.com" },
-                new Student { Id = 3, Name = "Carol Nguyen", Age = 19, Email = "carol@example.com" },
-                new Student { Id = 4, Name = "David Kim", Age = 21, Email = "david@example.com" }
+            modelBuilder.Entity<users>().HasData(
+                new users { Id = 1, Name = "Alice Johnson", Age = 20, Email = "alice@example.com" },
+                new users { Id = 2, Name = "Bob Lee", Age = 22, Email = "bob@example.com" },
+                new users { Id = 3, Name = "Carol Nguyen", Age = 19, Email = "carol@example.com" },
+                new users { Id = 4, Name = "David Kim", Age = 21, Email = "david@example.com" }
             );
 
             // Join table StudentCourse

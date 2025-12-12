@@ -30,6 +30,17 @@
         </dd>
     </dl>
 </div>
+<h4>Enrolled Students</h4>
+<ul>
+    @foreach (var student in Model.StudentCourses.Select(sc => sc.Student))
+    {
+        <li>
+            <a asp-controller="Students" asp-action="Details" asp-route-id="@student.Id">
+                @student.Name
+            </a>
+        </li>
+    }
+</ul>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

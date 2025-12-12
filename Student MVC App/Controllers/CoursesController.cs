@@ -34,7 +34,10 @@ namespace Student_MVC_App.Controllers
             }
 
             var course = await _context.Courses
+                .Include(c => c.StudentCourses)
+                    .ThenInclude(sc => sc.Student)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (course == null)
             {
                 return NotFound();

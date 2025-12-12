@@ -26,25 +26,25 @@ namespace Student_MVC_App.Controllers
         }
 
         // GET: Courses/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var course = await _context.Courses
-                .Include(c => c.StudentCourses)
-                    .ThenInclude(sc => sc.st)
-                .FirstOrDefaultAsync(m => m.Id == id);
+        //    //var course = await _context.Courses
+        //    //    .Include(c => c.StudentCourses)
+        //    //        .ThenInclude(sc => sc.st)
+        //    //    .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (course == null)
-            {
-                return NotFound();
-            }
+        //    //if (course == null)
+        //    //{
+        //    //    return NotFound();
+        //    //}
 
-            return View(course);
-        }
+        //    //return View(course);
+        //}
 
         // GET: Courses/Create
         public IActionResult Create()

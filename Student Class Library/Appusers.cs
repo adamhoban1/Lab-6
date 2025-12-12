@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Student_Class_Library
 {
-    public class Appusers : IdentityUser
+    public class Appusers : IdentityUser<Guid>
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -13,5 +13,7 @@ namespace Student_Class_Library
 
         public ICollection<project> projects { get; set; } = new List<project>();
         public ICollection<Team> teams { get; set; } = new List<Team>();
+
+        public ICollection<StudentCourse> StudentCourses { get; set; } = new List<StudentCourse>();
     }
 }
